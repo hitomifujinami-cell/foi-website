@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOI - Fuji of Innovation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #040e1a;
+      --card: rgba(6, 28, 50, 0.85);
+      --accent: #00e5d4;
+      --accent2: #00bfff;
+      --text: #e8f4ff;
+      --muted: #8ab0cc;
+      --border: rgba(0, 229, 212, 0.2);
+      --glow: 0 0 24px rgba(0, 229, 212, 0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Canvas background ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(4, 14, 26, 0.75);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-shadow: var(--glow);
+    }
+    .logo span { color: var(--text); font-size: 0.55rem; display: block; letter-spacing: 0.2em; margin-top: -2px; }
+
+    .nav-toggle {
+      width: 44px; height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(0,229,212,0.05);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 5px; cursor: pointer;
+    }
+    .nav-toggle span {
+      display: block; width: 22px; height: 2px;
+      background: var(--accent); border-radius: 2px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 20px 60px;
+    }
+
+    .hero-inner {
+      max-width: 760px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 52px 48px 44px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 60px rgba(0,0,0,0.6), var(--glow);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .breadcrumb {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      letter-spacing: 0.03em;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.75rem);
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+      margin-bottom: 28px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 8px; height: 8px;
+      background: #e74c3c;
+      border-radius: 50%;
+      margin: 10px auto 0;
+      -webkit-text-fill-color: initial;
+    }
+
+    .desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.85;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 32px 0 28px;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s;
+      border: none;
+      min-width: 170px;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #040e1a;
+      box-shadow: 0 4px 20px rgba(0, 229, 212, 0.4);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 28px rgba(0, 229, 212, 0.6); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid rgba(232, 244, 255, 0.35);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CAMPAIGN BANNER ── */
+    .campaign {
+      background: rgba(0, 20, 38, 0.9);
+      border: 1px solid rgba(0, 229, 212, 0.25);
+      border-radius: 14px;
+      padding: 22px 28px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .campaign-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .campaign-text {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .campaign-text strong { color: var(--text); }
+
+    .btn-campaign {
+      display: inline-block;
+      padding: 13px 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #040e1a;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 50px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Noto Sans JP', sans-serif;
+      transition: transform 0.18s, box-shadow 0.18s;
+      box-shadow: 0 4px 20px rgba(0, 229, 212, 0.35);
+    }
+    .btn-campaign:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(0,229,212,0.55); }
+
+    /* ── TAGS ── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .tag {
+      font-size: 0.72rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 229, 212, 0.3);
+      color: var(--muted);
+      background: rgba(0, 229, 212, 0.05);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .hero-inner { padding: 36px 22px 30px; }
+      .btn-group { flex-direction: column; align-items: stretch; }
+      .btn { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    FOI
+    <span>Fuji of Innovation</span>
+  </div>
+  <div class="nav-toggle" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="breadcrumb">
+      ホームページ制作 / LP制作 / 業務システム開発 / iPhoneアプリ開発<br>
+      SwiftUI / Laravel / 多言語対応 / SEO改善 / 分析 / 動画・集客支援
+    </p>
+
+    <h1>ホームページ制作・業務システム開発・<br>iPhoneアプリ開発で<br>売上と効率を伸ばす</h1>
+
+    <p class="desc">
+      Fuji of Innovationは、ホームページ制作、LP制作、業務システム開発、iPhoneアプリ開発まで一貫対応。<br>
+      「作って終わり」ではなく、集客導線の改善、業務効率化、多言語対応、SEOを意識した構成づくりまで含めて、売上向上に貢献する仕組みを一緒に作ります。
+    </p>
+    <p class="desc">
+      Laravel・Next.js・SwiftUIなどを活用し、企業サイト、予約サイト、勤怠管理、給与管理、申請フロー、GPSや地図機能を使ったiPhoneアプリなど、事業に必要な仕組みをわかりやすく整理しながら開発します。
+    </p>
+
+    <div class="btn-group">
+      <button class="btn btn-primary">相談内容を選ぶ</button>
+      <button class="btn btn-secondary">まずは無料相談</button>
+    </div>
+
+    <div class="campaign">
+      <p class="campaign-title">先着3社限定キャンペーン</p>
+      <p class="campaign-text">
+        キャンペーン期間中、<strong>フィードバックをいただける企業様限定</strong>で、<strong>先着3社に無料でホームページ制作</strong>を行っています。詳細は以下のキャンペーンページをご確認ください。
+      </p>
+      <button class="btn-campaign">無料ホームページ制作キャンペーンを見る</button>
+    </div>
+
+    <div class="tags">
+      <span class="tag">何を作るか相談OK</span>
+      <span class="tag">日本語・英語対応</span>
+      <span class="tag">ホームページ改善対応</span>
+      <span class="tag">iPhoneアプリ対応</span>
+      <span class="tag">地図・GPS機能も対応</span>
+      <span class="tag">公開後もサポート</span>
+      <span class="tag">初月：修正・小改善 無料</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Animated network background
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes = [], raf;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function init() {
+    nodes = [];
+    const count = Math.floor((W * H) / 14000);
+    for (let i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 2 + 1
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // subtle gradient base
+    const grad = ctx.createRadialGradient(W*0.5, H*0.4, 0, W*0.5, H*0.4, W*0.7);
+    grad.addColorStop(0, 'rgba(0,40,80,0.45)');
+    grad.addColorStop(1, 'rgba(4,14,26,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // connections
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 130) {
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.strokeStyle = `rgba(0,229,212,${0.12 * (1 - dist/130)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,229,212,0.5)';
+      ctx.fill();
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+    });
+
+    raf = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); init(); });
+  resize(); init(); draw();
+</script>
+</body>
+</html>
